@@ -1,17 +1,20 @@
 package es.ua.eps.raw_filmoteca
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.core.net.toUri
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.squareup.picasso.Picasso
 import es.ua.eps.raw_filmoteca.databinding.ActivityAboutBinding
 
+
 class AboutActivity : AppCompatActivity() {
     private lateinit var bindings: ActivityAboutBinding
+    private lateinit var mGoogleSignInClient: GoogleSignInClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +27,13 @@ class AboutActivity : AppCompatActivity() {
             name.text = "Name: " + intent.getStringExtra("name")
             email.text = "Email: " + intent.getStringExtra("email")
         }
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .build()
+
+        // Build a GoogleSignInClient with the options specified by gso.
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -37,14 +47,29 @@ class AboutActivity : AppCompatActivity() {
                 return true
             }
             R.id.close -> {
+                mGoogleSignInClient.signOut()
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
                 return true
             }
             R.id.disconnect -> {
+                mGoogleSignInClient.revokeAccess()
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
                 return true
             }
             R.id.about -> {
+                val account = GoogleSignIn.getLastSignedInAccount(this)
                 val intent = Intent(this, AboutActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                if (account != null) {
+                    intent.putExtra("pic", account.photoUrl.toString())
+                    intent.putExtra("id", account.id)
+                    intent.putExtra("name", account.displayName)
+                    intent.putExtra("email", account.email)
+                }
                 startActivity(intent)
                 return true
             }

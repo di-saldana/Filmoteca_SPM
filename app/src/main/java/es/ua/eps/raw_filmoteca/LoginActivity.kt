@@ -71,7 +71,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun updateUI(account: GoogleSignInAccount?) {
-        val intent = Intent(this, AboutActivity::class.java)
+        val intent = Intent(this, FilmListActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         if (account != null) {
             intent.putExtra("pic", account.photoUrl.toString())
