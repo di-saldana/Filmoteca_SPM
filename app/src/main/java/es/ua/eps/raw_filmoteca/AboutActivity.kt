@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.core.net.toUri
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.squareup.picasso.Picasso
 import es.ua.eps.raw_filmoteca.databinding.ActivityAboutBinding
 
 class AboutActivity : AppCompatActivity() {
@@ -18,7 +19,7 @@ class AboutActivity : AppCompatActivity() {
 
         with(bindings) {
             setContentView(root)
-            profileImage.setImageURI(intent.getStringExtra("pic")?.toUri())
+            Picasso.get().load(intent.getStringExtra("pic")).into(profileImage)
             id.text = "ID: " + intent.getStringExtra("id")
             name.text = "Name: " + intent.getStringExtra("name")
             email.text = "Email: " + intent.getStringExtra("email")

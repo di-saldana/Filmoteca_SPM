@@ -74,7 +74,7 @@ class LoginActivity : AppCompatActivity() {
         val intent = Intent(this, AboutActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         if (account != null) {
-            intent.putExtra("pic", account.photoUrl)
+            intent.putExtra("pic", account.photoUrl.toString())
             intent.putExtra("id", account.id)
             intent.putExtra("name", account.displayName)
             intent.putExtra("email", account.email)

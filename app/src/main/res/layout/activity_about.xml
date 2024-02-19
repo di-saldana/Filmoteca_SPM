@@ -17,10 +17,11 @@
 
     <ImageView
         android:id="@+id/profile_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/user_data"/>
+        android:layout_below="@id/user_data"
+        android:layout_margin="50dp"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
