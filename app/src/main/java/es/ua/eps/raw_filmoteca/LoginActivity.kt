@@ -25,31 +25,4 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.add -> {
-                return true
-            }
-            R.id.close -> {
-                return true
-            }
-            R.id.disconnect -> {
-                return true
-            }
-            R.id.about -> {
-                val intent = Intent(this, AboutActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
-                return true
-            }
-
-            else -> return super.onOptionsItemSelected(item)
-        }
-    }
 }
