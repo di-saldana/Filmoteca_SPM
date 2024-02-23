@@ -9,6 +9,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.squareup.picasso.Picasso
+import es.ua.eps.raw_filmoteca.data.Film
+import es.ua.eps.raw_filmoteca.data.FilmDataSource
 import es.ua.eps.raw_filmoteca.databinding.ActivityAboutBinding
 
 
@@ -44,6 +46,9 @@ class AboutActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.add -> {
+                val intent = Intent(this, AddFilm::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
                 return true
             }
             R.id.close -> {

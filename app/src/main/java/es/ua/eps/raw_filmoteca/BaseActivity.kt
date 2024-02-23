@@ -14,7 +14,7 @@ open class BaseActivity : AppCompatActivity() {
     //---------------------------------
     companion object {
         private const val TAG: String = "BaseActivity"
-        private const val REQUEST_PERMISSION: Int = 1234 // mastermoviles
+        private const val REQUEST_PERMISSION: Int = 1234
         //-----------------------------
         @SuppressLint("StaticFieldLeak")
         private var mCurrentActivity : Activity? = null

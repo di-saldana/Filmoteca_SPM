@@ -82,6 +82,9 @@ class FilmDataActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.add -> {
+                val intent = Intent(this, AddFilm::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
                 return true
             }
             R.id.close -> {
