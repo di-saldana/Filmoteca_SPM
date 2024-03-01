@@ -37,6 +37,15 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    signingConfigs {
+        getByName("debug") {
+            keyPassword = "android" 
+            storeFile = file("/Users/dianelys.saldana/.android/debug.keystore")
+            storePassword = "android"
+            keyAlias = "AndroidDebugKey"
+        }
+    }
 }
 
 tasks {
