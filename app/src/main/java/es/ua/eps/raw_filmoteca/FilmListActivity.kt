@@ -87,21 +87,13 @@ class FilmListActivity : BaseActivity()
             }
             R.id.disconnect -> {
                 mGoogleSignInClient.revokeAccess()
-                val intent = Intent(this, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
+                finish()
+                finishAffinity()
                 return true
             }
             R.id.about -> {
-                val account = GoogleSignIn.getLastSignedInAccount(this)
                 val intent = Intent(this, AboutActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                if (account != null) {
-                    intent.putExtra("pic", account.photoUrl.toString())
-                    intent.putExtra("id", account.id)
-                    intent.putExtra("name", account.displayName)
-                    intent.putExtra("email", account.email)
-                }
                 startActivity(intent)
                 return true
             }
@@ -109,5 +101,4 @@ class FilmListActivity : BaseActivity()
             else -> return super.onOptionsItemSelected(item)
         }
     }
-
 }

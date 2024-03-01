@@ -88,6 +88,9 @@ class AddFilm : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             es.ua.eps.raw_filmoteca.R.id.add -> {
+                val intent = Intent(this, AddFilm::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
                 return true
             }
             es.ua.eps.raw_filmoteca.R.id.close -> {
@@ -99,21 +102,13 @@ class AddFilm : AppCompatActivity() {
             }
             es.ua.eps.raw_filmoteca.R.id.disconnect -> {
                 mGoogleSignInClient.revokeAccess()
-                val intent = Intent(this, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
+                finish()
+                finishAffinity()
                 return true
             }
             es.ua.eps.raw_filmoteca.R.id.about -> {
-                val account = GoogleSignIn.getLastSignedInAccount(this)
                 val intent = Intent(this, AboutActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                if (account != null) {
-                    intent.putExtra("pic", account.photoUrl.toString())
-                    intent.putExtra("id", account.id)
-                    intent.putExtra("name", account.displayName)
-                    intent.putExtra("email", account.email)
-                }
                 startActivity(intent)
                 return true
             }

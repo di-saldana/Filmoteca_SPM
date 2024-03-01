@@ -30,6 +30,8 @@ class LoginActivity : AppCompatActivity() {
         with(bindings) {
             setContentView(root)
 
+            Log.d(TAG, "onCreate")
+
             signInButton.setSize(SignInButton.SIZE_STANDARD)
             signInButton.setOnClickListener() {
                 signIn()
@@ -73,12 +75,6 @@ class LoginActivity : AppCompatActivity() {
     private fun updateUI(account: GoogleSignInAccount?) {
         val intent = Intent(this, FilmListActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        if (account != null) {
-            intent.putExtra("pic", account.photoUrl.toString())
-            intent.putExtra("id", account.id)
-            intent.putExtra("name", account.displayName)
-            intent.putExtra("email", account.email)
-        }
         startActivity(intent)
     }
 
