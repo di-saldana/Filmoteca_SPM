@@ -17,6 +17,9 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import es.ua.eps.raw_filmoteca.data.Film
 import es.ua.eps.raw_filmoteca.data.FilmDataSource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -55,8 +58,31 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         super.onMessageReceived(message)
         message.notification?.let {
             getFirebaseMessage(it.title ?: "", it.body ?: "")
-            addFilm(it.body.toString() ?: "", "", 0, Film.Genre.Action, Film.Format.Digital,
-                "", "") // TEST
+        }
+
+        val title = message.data["title"]
+        val dir = message.data["dir"]
+        val year = message.data["year"]
+        val genreValue = message.data["genre"]?.toIntOrNull()
+        val formatValue = message.data["format"]?.toIntOrNull()
+        val imdb = message.data["imdb"]
+        val comments = message.data["comments"]
+
+        if (title != null && dir != null && year != null && genreValue != null && formatValue != null && imdb != null && comments != null) {
+            val genre = Film.Genre.fromValue(genreValue)
+            val format = Film.Format.fromValue(formatValue)
+
+            if (genre != null && format != null) {
+                addFilm(title, dir, year.toInt(), genre, format, imdb, comments)
+
+                GlobalScope.launch(Dispatchers.Main) {
+//                    FilmListActivity.reloadTable() // TODO
+                }
+            } else {
+                Log.e(TAG, "Invalid genre or format value received")
+            }
+        } else {
+            Log.e(TAG, "Missing or invalid data in FCM message")
         }
     }
 
@@ -71,11 +97,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         newFilm.format = format
         newFilm.imdbUrl = imdbUrl
         newFilm.comments = comments
-        newFilm.imageResId = es.ua.eps.raw_filmoteca.R.drawable.filmoteca
+        newFilm.imageResId = es.ua.eps.raw_filmoteca.R.drawable.filmoteca // TODO
 
         FilmDataSource.add(newFilm)
-
-        // TODO: FCM
     }
 
     private fun getFirebaseMessage(title: String, body: String) {

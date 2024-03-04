@@ -51,6 +51,8 @@ class AddFilm : AppCompatActivity() {
                 val imdbUrlStr = imdbUrl.text.toString()
                 val commentsStr = comments.text.toString()
 
+                // TODO: Add Photo
+
                 if(!titleStr.isEmpty() && !directorStr.isEmpty()) {
                     addFilm(titleStr, directorStr, yearInt, selectedGenre, selectedFormat, imdbUrlStr, commentsStr)
 

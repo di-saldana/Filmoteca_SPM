@@ -30,8 +30,6 @@ class LoginActivity : AppCompatActivity() {
         with(bindings) {
             setContentView(root)
 
-            Log.d(TAG, "onCreate")
-
             signInButton.setSize(SignInButton.SIZE_STANDARD)
             signInButton.setOnClickListener() {
                 signIn()
