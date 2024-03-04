@@ -1,6 +1,7 @@
 package es.ua.eps.raw_filmoteca
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -40,6 +41,26 @@ class AboutActivity : AppCompatActivity() {
                 id.text = "ID: " + account.id
                 name.text = "Name: " + account.displayName
                 email.text = "Email: " + account.email
+            }
+
+            websiteButton.setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.imdb.com/"))
+
+                if (intent.resolveActivity(packageManager) != null) {
+                    startActivity(intent)
+                }
+            }
+
+            supportButton.setOnClickListener {
+                val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:dsl42@alu.ua.es"))
+
+                if (intent.resolveActivity(packageManager) != null) {
+                    startActivity(intent)
+                }
+            }
+
+            backButton.setOnClickListener {
+                finish()
             }
         }
     }
