@@ -15,6 +15,8 @@ import android.os.Looper
 import android.util.Log
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
+import es.ua.eps.raw_filmoteca.data.Film
+import es.ua.eps.raw_filmoteca.data.FilmDataSource
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -53,7 +55,27 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         super.onMessageReceived(message)
         message.notification?.let {
             getFirebaseMessage(it.title ?: "", it.body ?: "")
+            addFilm(it.body.toString() ?: "", "", 0, Film.Genre.Action, Film.Format.Digital,
+                "", "") // TEST
         }
+    }
+
+    private fun addFilm(title: String, director: String, year: Int, genre: Film.Genre,
+                        format: Film.Format, imdbUrl: String, comments: String) {
+        val newFilm = Film()
+
+        newFilm.title = title
+        newFilm.director = director
+        newFilm.year = year
+        newFilm.genre = genre
+        newFilm.format = format
+        newFilm.imdbUrl = imdbUrl
+        newFilm.comments = comments
+        newFilm.imageResId = es.ua.eps.raw_filmoteca.R.drawable.filmoteca
+
+        FilmDataSource.add(newFilm)
+
+        // TODO: FCM
     }
 
     private fun getFirebaseMessage(title: String, body: String) {
@@ -77,15 +99,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+            ) != PackageManager.PERMISSION_GRANTED) {
             return
         }
         notificationManager.notify(notificationId, notificationBuilder.build())

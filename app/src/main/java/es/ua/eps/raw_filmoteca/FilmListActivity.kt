@@ -2,17 +2,22 @@ package es.ua.eps.raw_filmoteca
 
 import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import es.ua.eps.raw_filmoteca.data.FilmDataSource
 import es.ua.eps.raw_filmoteca.data.FilmsArrayAdapter
 import es.ua.eps.raw_filmoteca.databinding.ActivityFilmListBinding
+
 
 //-------------------------------------
 class FilmListActivity : BaseActivity()
@@ -36,6 +41,8 @@ class FilmListActivity : BaseActivity()
 
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        askNotificationPermission()
     }
 
     //---------------------------------
@@ -101,4 +108,21 @@ class FilmListActivity : BaseActivity()
             else -> return super.onOptionsItemSelected(item)
         }
     }
+
+    private fun askNotificationPermission(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            val hasPermission = ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+            if(!hasPermission){
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    0
+                )
+            }
+        }
+    }
+
 }
