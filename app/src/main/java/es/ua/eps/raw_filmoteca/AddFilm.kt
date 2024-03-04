@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import android.widget.Toast
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -44,13 +45,27 @@ class AddFilm : AppCompatActivity() {
             addFilmButton.setOnClickListener {
                 val titleStr = title.text.toString()
                 val directorStr = director.text.toString()
-                val yearInt = year.text.toString().toIntOrNull() ?: 0 // Cast year to Int
+                val yearInt = year.text.toString().toIntOrNull() ?: 0
                 val selectedGenre = genres[genreSpinner.selectedItemPosition]
                 val selectedFormat = formats[formatSpinner.selectedItemPosition]
-                val imdbUrl = imdbUrl.text.toString()
-                val comments = comments.text.toString()
+                val imdbUrlStr = imdbUrl.text.toString()
+                val commentsStr = comments.text.toString()
 
-                addFilm(titleStr, directorStr, yearInt, selectedGenre, selectedFormat, imdbUrl, comments)
+                if(!titleStr.isEmpty() && !directorStr.isEmpty()) {
+                    addFilm(titleStr, directorStr, yearInt, selectedGenre, selectedFormat, imdbUrlStr, commentsStr)
+
+                    val toast = Toast.makeText(this@AddFilm, "Film Added Successfully", Toast.LENGTH_SHORT)
+                    toast.show()
+
+                    title.text.clear()
+                    director.text.clear()
+                    year.text.clear()
+                    imdbUrl.text.clear()
+                    comments.text.clear()
+                } else {
+                    val toast = Toast.makeText(this@AddFilm, "Complete the Fields", Toast.LENGTH_SHORT)
+                    toast.show()
+                }
             }
         }
 
@@ -76,8 +91,6 @@ class AddFilm : AppCompatActivity() {
         newFilm.imageResId = es.ua.eps.raw_filmoteca.R.drawable.filmoteca
 
         FilmDataSource.add(newFilm)
-
-        // TODO: FCM
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
