@@ -1,7 +1,10 @@
 package es.ua.eps.raw_filmoteca
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -27,6 +30,12 @@ class FilmListActivity : BaseActivity()
     private lateinit var filmAdapter: FilmsArrayAdapter
     private lateinit var mGoogleSignInClient: GoogleSignInClient
 
+    private val filmAddedReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            filmAdapter.notifyDataSetChanged()
+        }
+    }
+
     //---------------------------------
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,12 +52,21 @@ class FilmListActivity : BaseActivity()
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         askNotificationPermission()
+
+        val filter = IntentFilter("FILM_ADDED")
+        registerReceiver(filmAddedReceiver, filter)
     }
 
     //---------------------------------
     override fun onRestart() {
         super.onRestart()
         filmAdapter.notifyDataSetChanged()
+    }
+
+    //---------------------------------
+    override fun onDestroy() {
+        unregisterReceiver(filmAddedReceiver)
+        super.onDestroy()
     }
 
     //---------------------------------

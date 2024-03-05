@@ -3,6 +3,7 @@ package es.ua.eps.raw_filmoteca
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
@@ -17,9 +18,6 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import es.ua.eps.raw_filmoteca.data.Film
 import es.ua.eps.raw_filmoteca.data.FilmDataSource
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -75,9 +73,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             if (genre != null && format != null) {
                 addFilm(title, dir, year.toInt(), genre, format, imdb, comments)
 
-                GlobalScope.launch(Dispatchers.Main) {
-//                    FilmListActivity.reloadTable() // TODO
-                }
+                val intent = Intent("FILM_ADDED")
+                intent.putExtra("title", title)
+                intent.putExtra("director", dir)
+                sendBroadcast(intent)
             } else {
                 Log.e(TAG, "Invalid genre or format value received")
             }
@@ -97,7 +96,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         newFilm.format = format
         newFilm.imdbUrl = imdbUrl
         newFilm.comments = comments
-        newFilm.imageResId = es.ua.eps.raw_filmoteca.R.drawable.filmoteca // TODO
+        newFilm.imageResId = R.drawable.filmoteca // TODO
 
         FilmDataSource.add(newFilm)
     }
