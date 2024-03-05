@@ -36,6 +36,12 @@ class FilmListActivity : BaseActivity()
         }
     }
 
+    private val filmRemovedReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            filmAdapter.notifyDataSetChanged()
+        }
+    }
+
     //---------------------------------
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +61,9 @@ class FilmListActivity : BaseActivity()
 
         val filter = IntentFilter("FILM_ADDED")
         registerReceiver(filmAddedReceiver, filter)
+
+        val filterRemoved = IntentFilter("FILM_REMOVED")
+        registerReceiver(filmRemovedReceiver, filterRemoved)
     }
 
     //---------------------------------
@@ -66,6 +75,7 @@ class FilmListActivity : BaseActivity()
     //---------------------------------
     override fun onDestroy() {
         unregisterReceiver(filmAddedReceiver)
+        unregisterReceiver(filmRemovedReceiver)
         super.onDestroy()
     }
 

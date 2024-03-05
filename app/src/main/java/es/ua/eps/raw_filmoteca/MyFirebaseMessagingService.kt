@@ -58,30 +58,58 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             getFirebaseMessage(it.title ?: "", it.body ?: "")
         }
 
+        val type = message.data["type"]
         val title = message.data["title"]
         val dir = message.data["dir"]
-        val year = message.data["year"]
-        val genreValue = message.data["genre"]?.toIntOrNull()
-        val formatValue = message.data["format"]?.toIntOrNull()
-        val imdb = message.data["imdb"]
-        val comments = message.data["comments"]
 
-        if (title != null && dir != null && year != null && genreValue != null && formatValue != null && imdb != null && comments != null) {
-            val genre = Film.Genre.fromValue(genreValue)
-            val format = Film.Format.fromValue(formatValue)
+        if (type == "alta") {
+            val year = message.data["year"]
+            val genreValue = message.data["genre"]?.toIntOrNull()
+            val formatValue = message.data["format"]?.toIntOrNull()
+            val imdb = message.data["imdb"]
+            val comments = message.data["comments"]
 
-            if (genre != null && format != null) {
-                addFilm(title, dir, year.toInt(), genre, format, imdb, comments)
+            if (title != null && dir != null && year != null && genreValue != null && formatValue != null && imdb != null && comments != null) {
+                val genre = Film.Genre.fromValue(genreValue)
+                val format = Film.Format.fromValue(formatValue)
 
-                val intent = Intent("FILM_ADDED")
+                if (genre != null && format != null) {
+                    val existingFilm = FilmDataSource.getFilmByTitle(title)
+                    if (existingFilm != null) {
+                        existingFilm.director = dir
+                        existingFilm.year = year.toInt()
+                        existingFilm.genre = genre
+                        existingFilm.format = format
+                        existingFilm.imdbUrl = imdb
+                        existingFilm.comments = comments
+                    } else {
+                        addFilm(title, dir, year.toInt(), genre, format, imdb, comments)
+                    }
+
+                    val intent = Intent("FILM_ADDED")
+                    intent.putExtra("title", title)
+                    intent.putExtra("director", dir)
+                    sendBroadcast(intent)
+                } else {
+                    Log.e(TAG, "Invalid genre or format value received")
+                }
+            } else {
+                Log.e(TAG, "Missing or invalid data in FCM message")
+            }
+        } else if (type == "baja") {
+            val existingFilm = FilmDataSource.getFilmByTitle(title.toString())
+            if (existingFilm != null) {
+                FilmDataSource.remove(existingFilm)
+
+                val intent = Intent("FILM_REMOVED")
                 intent.putExtra("title", title)
                 intent.putExtra("director", dir)
                 sendBroadcast(intent)
             } else {
-                Log.e(TAG, "Invalid genre or format value received")
+                Log.e(TAG, "Film does not exist, cannot remove")
             }
         } else {
-            Log.e(TAG, "Missing or invalid data in FCM message")
+            Log.e(TAG, "Invalid message type: $type")
         }
     }
 

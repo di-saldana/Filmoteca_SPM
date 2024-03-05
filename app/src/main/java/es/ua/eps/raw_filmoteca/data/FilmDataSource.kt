@@ -54,4 +54,19 @@ object FilmDataSource {
     fun add(f: Film) {
         films.add(f)
     }
+
+    //---------------------------------
+    fun getFilmByTitle(title: String): Film? {
+        for (film in films) {
+            if (film.title.equals(title, ignoreCase = true)) {
+                return film
+            }
+        }
+        return null
+    }
+
+    //---------------------------------
+    fun remove(existingFilm: Film) {
+        films.remove(existingFilm)
+    }
 }
