@@ -32,13 +32,17 @@ class FilmListActivity : BaseActivity()
 
     private val filmAddedReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            filmAdapter.notifyDataSetChanged()
+            runOnUiThread {
+                filmAdapter.notifyDataSetChanged()
+            }
         }
     }
 
     private val filmRemovedReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            filmAdapter.notifyDataSetChanged()
+            runOnUiThread {
+                filmAdapter.notifyDataSetChanged()
+            }
         }
     }
 
@@ -47,7 +51,9 @@ class FilmListActivity : BaseActivity()
         super.onCreate(savedInstanceState)
         initUI()
         checkPermission(Manifest.permission.INTERNET, {
-            filmAdapter.notifyDataSetChanged()
+            runOnUiThread {
+                filmAdapter.notifyDataSetChanged()
+            }
         })
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -59,17 +65,20 @@ class FilmListActivity : BaseActivity()
 
         askNotificationPermission()
 
-        val filter = IntentFilter("FILM_ADDED")
-        registerReceiver(filmAddedReceiver, filter)
+        val filterAdded = IntentFilter("FILM_ADDED")
+        ContextCompat.registerReceiver(this, filmAddedReceiver, filterAdded, ContextCompat.RECEIVER_NOT_EXPORTED)
 
         val filterRemoved = IntentFilter("FILM_REMOVED")
-        registerReceiver(filmRemovedReceiver, filterRemoved)
+        ContextCompat.registerReceiver(this, filmRemovedReceiver, filterRemoved, ContextCompat.RECEIVER_NOT_EXPORTED)
     }
 
     //---------------------------------
     override fun onRestart() {
         super.onRestart()
-        filmAdapter.notifyDataSetChanged()
+
+        runOnUiThread {
+            filmAdapter.notifyDataSetChanged()
+        }
     }
 
     //---------------------------------
