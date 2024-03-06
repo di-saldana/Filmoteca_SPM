@@ -51,8 +51,6 @@ class AddFilm : AppCompatActivity() {
                 val imdbUrlStr = imdbUrl.text.toString()
                 val commentsStr = comments.text.toString()
 
-                // TODO: Add Photo
-
                 if(!titleStr.isEmpty() && !directorStr.isEmpty()) {
                     addFilm(titleStr, directorStr, yearInt, selectedGenre, selectedFormat, imdbUrlStr, commentsStr)
 
@@ -64,6 +62,10 @@ class AddFilm : AppCompatActivity() {
                     year.text.clear()
                     imdbUrl.text.clear()
                     comments.text.clear()
+
+                    val intent = Intent(this@AddFilm, FilmListActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent)
                 } else {
                     val toast = Toast.makeText(this@AddFilm, "Complete the Fields", Toast.LENGTH_SHORT)
                     toast.show()

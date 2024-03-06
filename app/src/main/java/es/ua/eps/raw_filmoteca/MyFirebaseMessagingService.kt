@@ -84,12 +84,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                         existingFilm.comments = comments
                     } else {
                         addFilm(title, dir, year.toInt(), genre, format, imdb, comments)
-                    }
 
-                    val intent = Intent("FILM_ADDED")
-                    intent.putExtra("title", title)
-                    intent.putExtra("director", dir)
-                    sendBroadcast(intent)
+                        val intent = Intent("FILM_ADDED")
+                        intent.putExtra("title", title)
+                        intent.putExtra("director", dir)
+                        sendBroadcast(intent)
+                    }
                 } else {
                     Log.e(TAG, "Invalid genre or format value received")
                 }
@@ -124,7 +124,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         newFilm.format = format
         newFilm.imdbUrl = imdbUrl
         newFilm.comments = comments
-        newFilm.imageResId = R.drawable.filmoteca // TODO
+        newFilm.imageResId = R.drawable.filmoteca
 
         FilmDataSource.add(newFilm)
     }
