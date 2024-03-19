@@ -54,9 +54,6 @@ class AddFilm : AppCompatActivity() {
                 if(!titleStr.isEmpty() && !directorStr.isEmpty()) {
                     addFilm(titleStr, directorStr, yearInt, selectedGenre, selectedFormat, imdbUrlStr, commentsStr)
 
-                    val toast = Toast.makeText(this@AddFilm, "Film Added Successfully", Toast.LENGTH_SHORT)
-                    toast.show()
-
                     title.text.clear()
                     director.text.clear()
                     year.text.clear()
@@ -83,18 +80,46 @@ class AddFilm : AppCompatActivity() {
 
     private fun addFilm(title: String, director: String, year: Int, genre: Film.Genre,
                         format: Film.Format, imdbUrl: String, comments: String) {
-        val newFilm = Film()
 
-        newFilm.title = title
-        newFilm.director = director
-        newFilm.year = year
-        newFilm.genre = genre
-        newFilm.format = format
-        newFilm.imdbUrl = imdbUrl
-        newFilm.comments = comments
-        newFilm.imageResId = es.ua.eps.raw_filmoteca.R.drawable.filmoteca
+        val filmExists = FilmDataSource.films.any { it.title.toString() == title }
 
-        FilmDataSource.add(newFilm)
+        if(filmExists) {
+            val existingFilm = FilmDataSource.films.find { it.title.toString() == title }
+            existingFilm?.apply {
+                this.director = director
+                if (year != null) {
+                    this.year = year
+                }
+                if (genre != null) {
+                    this.genre = genre
+                }
+                this.imdbUrl = imdbUrl
+                if (format != null) {
+                    this.format = format
+                }
+                this.comments = comments
+                imageUrl?.let { this.imageUrl = it }
+            }
+
+            val toast = Toast.makeText(this@AddFilm, "Film Updated Successfully", Toast.LENGTH_SHORT)
+            toast.show()
+        } else {
+            val newFilm = Film()
+
+            newFilm.title = title
+            newFilm.director = director
+            newFilm.year = year
+            newFilm.genre = genre
+            newFilm.format = format
+            newFilm.imdbUrl = imdbUrl
+            newFilm.comments = comments
+            newFilm.imageResId = es.ua.eps.raw_filmoteca.R.drawable.filmoteca
+
+            FilmDataSource.add(newFilm)
+
+            val toast = Toast.makeText(this@AddFilm, "Film Added Successfully", Toast.LENGTH_SHORT)
+            toast.show()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AbsListView
 import android.widget.ListView
+import androidx.core.net.toUri
 import androidx.fragment.app.ListFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -63,9 +64,9 @@ class FilmListFragment : ListFragment(), MessageListener {
     override fun onMessageReceived(message: RemoteMessage) {
         GlobalScope.launch(Dispatchers.IO) {
             launch(Dispatchers.Main) {
-                when (message.notification?.title) {
-                    "New Film" -> handleFilmMessage(message, isNewFilm = true)
-                    "Film Removed" -> handleFilmMessage(message, isNewFilm = false)
+                when (message.data["type"]) {
+                    "alta" -> handleFilmMessage(message, isNewFilm = true)
+                    "baja" -> handleFilmMessage(message, isNewFilm = false)
                     else -> Log.e("Error", "Error receiving the message")
                 }
             }
@@ -73,7 +74,7 @@ class FilmListFragment : ListFragment(), MessageListener {
     }
 
     private fun handleFilmMessage(message: RemoteMessage, isNewFilm: Boolean) {
-        val photo = message.notification?.imageUrl
+        val photo = message.data["image"]?.toUri()
         val title = message.data["title"]
         val director = message.data["dir"]
         val year = message.data["year"]
@@ -100,7 +101,6 @@ class FilmListFragment : ListFragment(), MessageListener {
     private fun updateFilm(title: String?, imageUrl: Uri?, director: String?, year: String?, genre: String?, imdb: String?, format: String?, comments: String?) {
         val existingFilm = FilmDataSource.films.find { it.title.toString() == title }
         existingFilm?.apply {
-            this.imageResId = 0
             this.director = director
             if (year != null) {
                 this.year = year.toInt()
@@ -173,7 +173,7 @@ class FilmListFragment : ListFragment(), MessageListener {
 
                 override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
                     val inflater = mode.menuInflater
-                    inflater.inflate(R.menu.menu, menu)
+                    inflater.inflate(R.menu.delete_menu, menu)
                     selectedItems.clear()
                     return true
                 }
