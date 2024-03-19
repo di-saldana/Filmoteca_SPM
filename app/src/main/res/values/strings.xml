@@ -5,6 +5,10 @@
     <string name="data_title">Movie Information</string>
     <string name="director">Director:</string>
     <string name="year">Year:</string>
+    <string name="format">Format:</string>
+    <string name="genre">Genre:</string>
+    <string name="imdb">IMDb</string>
+    <string name="comments">Comments:</string>
 
     <string name="no_title">No Title</string>
 </resources>

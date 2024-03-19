@@ -2,6 +2,7 @@ package es.ua.eps.raw_filmoteca
 
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import es.ua.eps.raw_filmoteca.data.Film
 import es.ua.eps.raw_filmoteca.data.FilmDataSource
 import es.ua.eps.raw_filmoteca.databinding.ActivityFilmDataBinding
 import es.ua.eps.raw_filmoteca.tools.OnTaskCompleted
@@ -69,8 +71,16 @@ class FilmDataActivity : AppCompatActivity() {
             bindings.movieTitle.text = film.title
             bindings.tvDirector.text = film.director
             bindings.tvYear.text     = film.year.toString()
-            //bindings.tvFormat.text   = "${resources.getStringArray(R.array.formats)[film.format]}, ${resources.getStringArray(R.array.genres)[film.genre]}"
+            bindings.formatValue.text   = Film.Format.fromValue(film.format.value).toString()
+            bindings.genreValue.text    = Film.Genre.fromValue(film.genre.value).toString()
             bindings.tvComments.text = film.comments
+            bindings.imdbUrl.setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(film.imdbUrl))
+
+                if (intent.resolveActivity(packageManager) != null) {
+                    startActivity(intent)
+                }
+            }
         }
     }
 

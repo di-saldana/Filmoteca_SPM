@@ -6,67 +6,59 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".FilmDataActivity">
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/data_title"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textStyle="bold" />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="16dp" />
-
+    
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/movie_title"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_height="match_parent"
+                android:gravity="start"
                 android:textStyle="bold"
-                tools:text="title" />
+                tools:text="Title"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="50dp"
+                android:layout_marginBottom="30dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:padding="8dp">
 
                 <es.ua.eps.raw_filmoteca.tools.ImageRatio
                     android:id="@+id/imgCover"
-                    android:layout_width="72dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
                     android:layout_gravity="left"
                     android:layout_weight="1"
                     android:adjustViewBounds="true"
                     android:foregroundGravity="left"
                     android:padding="8dp"
                     android:scaleType="centerCrop"
-                    tools:srcCompat="@drawable/yosi" />
+                    tools:srcCompat="@drawable/yosi"
+                    android:layout_margin="20dp"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="4"
-                    android:gravity="center_vertical"
-                    android:orientation="vertical"
-                    android:padding="8dp">
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/director"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:layout_marginTop="8dp"/>
 
                     <TextView
                         android:id="@+id/tv_director"
@@ -78,7 +70,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/year"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:layout_marginTop="8dp"/>
 
                     <TextView
                         android:id="@+id/tv_year"
@@ -86,26 +79,51 @@
                         android:layout_height="wrap_content"
                         tools:text="1980" />
 
-                    <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="4dp" />
-
                     <TextView
-                        android:id="@+id/tv_format"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:text="DVD, Sci-Fi" />
+                        android:text="@string/format"
+                        android:textStyle="bold"
+                        android:layout_marginTop="8dp"/>
+
+                    <TextView
+                        android:id="@+id/format_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:text="DVD" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/genre"
+                        android:textStyle="bold"
+                        android:layout_marginTop="8dp"/>
+
+                    <TextView
+                        android:id="@+id/genre_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:text="Drama" />
 
                 </LinearLayout>
 
             </LinearLayout>
+
+            <Button
+                android:id="@+id/imdbUrl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/imdb"
+                android:layout_marginStart="30dp"/>
 
             <TextView
                 android:id="@+id/tv_comments"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                tools:text="notes" />
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="10dp"
+                tools:text="@string/comments" />
         </LinearLayout>
     </ScrollView>
 

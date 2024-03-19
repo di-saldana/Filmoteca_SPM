@@ -12,7 +12,9 @@
         android:id="@+id/cover"
         android:layout_width="64dp"
         android:layout_height="wrap_content"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@mipmap/ic_launcher"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,17 +25,17 @@
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center_vertical"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textStyle="bold"
-            tools:text="Title" />
+            tools:text="Title"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"/>
 
         <TextView
             android:id="@+id/director"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="top"
             tools:text="Director" />
 
