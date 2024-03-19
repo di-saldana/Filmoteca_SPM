@@ -78,8 +78,8 @@ class FilmListFragment : ListFragment(), MessageListener {
         val title = message.data["title"]
         val director = message.data["dir"]
         val year = message.data["year"]
-        val genre = message.data["genre"]
-        val format = message.data["format"]
+        val genre = message.data["genre"]?.toInt()
+        val format = message.data["format"]?.toInt()
         val imdb = message.data["imdb"]
         val comments = message.data["comments"]
 
@@ -87,9 +87,9 @@ class FilmListFragment : ListFragment(), MessageListener {
 
         if (isNewFilm) {
             if (filmExists) {
-                updateFilm(title, photo, director, year, genre, imdb, format,comments)
+                updateFilm(title, photo, director, year, genre, format, imdb,comments)
             } else {
-                addFilm(title, photo, director, year, genre, imdb, format,comments)
+                addFilm(title, photo, director, year, genre, format, imdb, comments)
             }
         } else {
             if (filmExists) {
@@ -98,7 +98,7 @@ class FilmListFragment : ListFragment(), MessageListener {
         }
     }
 
-    private fun updateFilm(title: String?, imageUrl: Uri?, director: String?, year: String?, genre: String?, imdb: String?, format: String?, comments: String?) {
+    private fun updateFilm(title: String?, imageUrl: Uri?, director: String?, year: String?, genre: Int?, format: Int?, imdb: String?, comments: String?) {
         val existingFilm = FilmDataSource.films.find { it.title.toString() == title }
         existingFilm?.apply {
             this.director = director
@@ -106,11 +106,11 @@ class FilmListFragment : ListFragment(), MessageListener {
                 this.year = year.toInt()
             }
             if (genre != null) {
-                this.genre = Film.Genre.Action // TODO
+                this.genre = Film.Genre.fromValue(genre)!!
             }
             this.imdbUrl = imdb
             if (format != null) {
-                this.format = Film.Format.DVD // TODO
+                this.format = Film.Format.fromValue(format)!!
             }
             this.comments = comments
             imageUrl?.let { this.imageUrl = it.toString() }
@@ -119,7 +119,7 @@ class FilmListFragment : ListFragment(), MessageListener {
         (listView.adapter as FilmsArrayAdapter).notifyDataSetChanged()
     }
 
-    private fun addFilm(title: String?, imageUrl: Uri?, director: String?, year: String?, genre: String?, imdb: String?, format: String?, comments: String?) {
+    private fun addFilm(title: String?, imageUrl: Uri?, director: String?, year: String?, genre: Int?, format: Int?, imdb: String?, comments: String?) {
         val film = Film().apply {
             this.title = title
             this.director = director
@@ -127,11 +127,11 @@ class FilmListFragment : ListFragment(), MessageListener {
                 this.year = year.toInt()
             }
             if (genre != null) {
-                this.genre = Film.Genre.Action // TODO
+                this.genre = Film.Genre.fromValue(genre)!!
             }
             this.imdbUrl = imdb
             if (format != null) {
-                this.format = Film.Format.DVD // TODO
+                this.format = Film.Format.fromValue(format)!!
             }
             this.comments = comments
             imageUrl?.let {film -> this.imageUrl = film.toString() }
