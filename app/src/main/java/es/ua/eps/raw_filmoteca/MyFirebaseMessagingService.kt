@@ -3,7 +3,6 @@ package es.ua.eps.raw_filmoteca
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
@@ -11,122 +10,35 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.messaging.FirebaseMessaging
-import es.ua.eps.raw_filmoteca.data.Film
-import es.ua.eps.raw_filmoteca.data.FilmDataSource
+
+interface MessageListener {
+    fun onMessageReceived(message: RemoteMessage)
+}
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
+    companion object{
+        lateinit var token: String
+        private val listeners = mutableListOf<MessageListener>()
 
-    private var token: String? = null
-    private val onNewTokenListeners: MutableList<(String) -> Unit> = mutableListOf()
-
-    companion object {
-        private const val TAG = "MyFirebaseMsgService"
-    }
-
-    fun askToken() {
-        FirebaseMessaging.getInstance().token
-            .addOnCompleteListener(OnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    Log.w(TAG, "Fetching FCM registration token failed", task.exception)
-                    return@OnCompleteListener
-                }
-                // Get new FCM registration token
-                token = task.result
-                Log.d(TAG, "FCM registration Token: $token")
-            })
+        fun registerListener(listener: MessageListener) {
+            listeners.add(listener)
+        }
+        fun unregisterListener(listener: MessageListener) {
+            listeners.remove(listener)
+        }
     }
 
     override fun onNewToken(newToken: String) {
         token = newToken
-        Log.d(TAG, "Refreshed token: $token")
-        // Run on main thread
-        Handler(Looper.getMainLooper()).post {
-            for (func in onNewTokenListeners) {
-                func(newToken)
-            }
-        }
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-        super.onMessageReceived(message)
+        listeners.forEach { it.onMessageReceived(message) }
+
         message.notification?.let {
             getFirebaseMessage(it.title ?: "", it.body ?: "")
         }
 
-        val type = message.data["type"]
-        val title = message.data["title"]
-        val dir = message.data["dir"]
-
-        if (type == "alta") {
-            val year = message.data["year"]
-            val genreValue = message.data["genre"]?.toIntOrNull()
-            val formatValue = message.data["format"]?.toIntOrNull()
-            val imdb = message.data["imdb"]
-            val comments = message.data["comments"]
-
-            if (title != null && dir != null && year != null && genreValue != null && formatValue != null && imdb != null && comments != null) {
-                val genre = Film.Genre.fromValue(genreValue)
-                val format = Film.Format.fromValue(formatValue)
-
-                if (genre != null && format != null) {
-                    val existingFilm = FilmDataSource.getFilmByTitle(title)
-                    if (existingFilm != null) {
-                        existingFilm.director = dir
-                        existingFilm.year = year.toInt()
-                        existingFilm.genre = genre
-                        existingFilm.format = format
-                        existingFilm.imdbUrl = imdb
-                        existingFilm.comments = comments
-                    } else {
-                        addFilm(title, dir, year.toInt(), genre, format, imdb, comments)
-
-                        val intent = Intent("FILM_ADDED")
-                        intent.putExtra("title", title)
-                        intent.putExtra("director", dir)
-                        sendBroadcast(intent)
-                    }
-                } else {
-                    Log.e(TAG, "Invalid genre or format value received")
-                }
-            } else {
-                Log.e(TAG, "Missing or invalid data in FCM message")
-            }
-        } else if (type == "baja") {
-            val existingFilm = FilmDataSource.getFilmByTitle(title.toString())
-            if (existingFilm != null) {
-                FilmDataSource.remove(existingFilm)
-
-                val intent = Intent("FILM_REMOVED")
-                intent.putExtra("title", title)
-                intent.putExtra("director", dir)
-                sendBroadcast(intent)
-            } else {
-                Log.e(TAG, "Film does not exist, cannot remove")
-            }
-        } else {
-            Log.e(TAG, "Invalid message type: $type")
-        }
-    }
-
-    private fun addFilm(title: String, director: String, year: Int, genre: Film.Genre,
-                        format: Film.Format, imdbUrl: String, comments: String) {
-        val newFilm = Film()
-
-        newFilm.title = title
-        newFilm.director = director
-        newFilm.year = year
-        newFilm.genre = genre
-        newFilm.format = format
-        newFilm.imdbUrl = imdbUrl
-        newFilm.comments = comments
-        newFilm.imageResId = R.drawable.filmoteca
-
-        FilmDataSource.add(newFilm)
     }
 
     private fun getFirebaseMessage(title: String, body: String) {
@@ -150,7 +62,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED) {
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             return
         }
         notificationManager.notify(notificationId, notificationBuilder.build())

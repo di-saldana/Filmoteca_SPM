@@ -4,6 +4,9 @@
         android:id="@+id/add"
         android:title="Add"/>
     <item
+        android:id="@+id/delete"
+        android:title="Delete"/>
+    <item
         android:id="@+id/close"
         android:title="Close session"/>
     <item

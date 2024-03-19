@@ -1,60 +1,38 @@
 package es.ua.eps.raw_filmoteca
 
-import android.Manifest
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
-import android.content.pm.PackageManager
-import android.os.Build
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import android.widget.ListView
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import es.ua.eps.raw_filmoteca.data.FilmDataSource
-import es.ua.eps.raw_filmoteca.data.FilmsArrayAdapter
 import es.ua.eps.raw_filmoteca.databinding.ActivityFilmListBinding
 
-
-//-------------------------------------
-class FilmListActivity : BaseActivity()
-    , AdapterView.OnItemClickListener {
-
-    private lateinit var bindings : ActivityFilmListBinding
-    private lateinit var filmAdapter: FilmsArrayAdapter
+class FilmListActivity : AppCompatActivity(), FilmListFragment.OnItemSelectedListener{
+    private lateinit var bindings: ActivityFilmListBinding
     private lateinit var mGoogleSignInClient: GoogleSignInClient
 
-    private val filmAddedReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            runOnUiThread {
-                filmAdapter.notifyDataSetChanged()
-            }
-        }
-    }
-
-    private val filmRemovedReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            runOnUiThread {
-                filmAdapter.notifyDataSetChanged()
-            }
-        }
-    }
-
-    //---------------------------------
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initUI()
-        checkPermission(Manifest.permission.INTERNET, {
-            runOnUiThread {
-                filmAdapter.notifyDataSetChanged()
+        bindings = ActivityFilmListBinding.inflate(layoutInflater)
+
+        with(bindings) {
+            setContentView(root)
+
+            if (findViewById<View?>(R.id.fragment_container)  != null) {
+                if (savedInstanceState != null) return
+
+                val fragment = FilmListFragment()
+                fragment.arguments = intent.extras
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.fragment_container, fragment).commit()
             }
-        })
+        }
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
@@ -62,50 +40,14 @@ class FilmListActivity : BaseActivity()
 
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        askNotificationPermission()
-
-        val filterAdded = IntentFilter("FILM_ADDED")
-        ContextCompat.registerReceiver(this, filmAddedReceiver, filterAdded, ContextCompat.RECEIVER_NOT_EXPORTED)
-
-        val filterRemoved = IntentFilter("FILM_REMOVED")
-        ContextCompat.registerReceiver(this, filmRemovedReceiver, filterRemoved, ContextCompat.RECEIVER_NOT_EXPORTED)
     }
 
-    //---------------------------------
-    override fun onRestart() {
-        super.onRestart()
+    override fun onItemSelected(position: Int, listView: ListView) {
+        Log.d("", "Selected: $position")
 
-        runOnUiThread {
-            filmAdapter.notifyDataSetChanged()
-        }
-    }
-
-    //---------------------------------
-    override fun onDestroy() {
-        unregisterReceiver(filmAddedReceiver)
-        unregisterReceiver(filmRemovedReceiver)
-        super.onDestroy()
-    }
-
-    //---------------------------------
-    private fun initUI() {
-        bindings = ActivityFilmListBinding.inflate(layoutInflater)
-        with(bindings) {
-            setContentView(root)
-            filmAdapter = FilmsArrayAdapter(this@FilmListActivity, android.R.layout.simple_list_item_1, FilmDataSource.films)
-            list.onItemClickListener = this@FilmListActivity
-            list.adapter = filmAdapter
-        }
-    }
-
-    //---------------------------------
-    // AdapterView.OnItemClickListener (ListView)
-    //---------------------------------
-    override fun onItemClick(adapterView: AdapterView<*>?, view: View?, index: Int, l: Long) {
         val intent = Intent(this, FilmDataActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-        intent.putExtra(FilmDataActivity.EXTRA_FILM_ID, index)
+        intent.putExtra(FilmDataActivity.EXTRA_FILM_ID, position)
         startActivity(intent)
     }
 
@@ -145,21 +87,4 @@ class FilmListActivity : BaseActivity()
             else -> return super.onOptionsItemSelected(item)
         }
     }
-
-    private fun askNotificationPermission(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-            val hasPermission = ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-            if(!hasPermission){
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    0
-                )
-            }
-        }
-    }
-
 }
