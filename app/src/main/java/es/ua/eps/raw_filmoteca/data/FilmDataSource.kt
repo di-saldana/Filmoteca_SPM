@@ -43,6 +43,49 @@ object FilmDataSource {
         films.add(f)
 
         // Añade tantas películas como quieras!
+        f = Film()
+        f.title = "Little Miss Sunshine"
+        f.director = "Jonathan Dayton, Valerie Faris"
+        f.imageUrl = "https://m.media-amazon.com/images/M/MV5BMTgzNTgzODU0NV5BMl5BanBnXkFtZTcwMjEyMjMzMQ@@._V1_.jpg"
+        f.comments = ""
+        f.format = Film.Format.Digital
+        f.genre = Film.Genre.Comedy
+        f.imdbUrl = "https://www.imdb.com/title/tt0449059/"
+        f.year = 2006
+        films.add(f)
+
+        f = Film()
+        f.title = "Quiz Lady"
+        f.director = "Jessica Yu"
+        f.imageUrl = "https://upload.wikimedia.org/wikipedia/en/8/84/Quiz_lady_poster.png"
+        f.comments = ""
+        f.format = Film.Format.Digital
+        f.genre = Film.Genre.Comedy
+        f.imdbUrl = "https://www.imdb.com/title/tt13405810/?ref_=fn_al_tt_1"
+        f.year = 2023
+        films.add(f)
+
+        f = Film()
+        f.title = "Ferris Bueller's Day Off"
+        f.director = "John Hughes"
+        f.imageUrl = "https://m.media-amazon.com/images/M/MV5BMDA0NjZhZWUtNmI2NC00MmFjLTgwZDYtYzVjZmNhMDVmOTBkXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg"
+        f.comments = ""
+        f.format = Film.Format.DVD
+        f.genre = Film.Genre.Comedy
+        f.imdbUrl = "https://www.imdb.com/title/tt0091042/?ref_=fn_al_tt_2"
+        f.year = 1986
+        films.add(f)
+
+        f = Film()
+        f.title = "Picando alante"
+        f.director = "Israel Lugo"
+        f.imageUrl = "https://m.media-amazon.com/images/M/MV5BYzJiNmFlMzItYmQyYS00ODQxLWFhNTAtYjZiMmFkYzVkNmUwXkEyXkFqcGdeQXVyMTUwMzE2ODQy._V1_.jpg"
+        f.comments = ""
+        f.format = Film.Format.Digital
+        f.genre = Film.Genre.Comedy
+        f.imdbUrl = "https://www.imdb.com/title/tt18380842/?ref_=fn_al_tt_1"
+        f.year = 2022
+        films.add(f)
     }
 
     //---------------------------------
