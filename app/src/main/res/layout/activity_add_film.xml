@@ -48,15 +48,25 @@
         android:layout_below="@+id/imdbUrl"
         android:hint="Comments"></EditText>
 
-    <androidx.constraintlayout.utils.widget.ImageFilterView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"></androidx.constraintlayout.utils.widget.ImageFilterView>
+    <EditText
+        android:id="@+id/lat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/comments"
+        android:hint="Latitude"></EditText>
+
+    <EditText
+        android:id="@+id/lon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lat"
+        android:hint="Longitude"></EditText>
 
     <Spinner
         android:id="@+id/genre"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/comments"
+        android:layout_below="@+id/lon"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"/>
 
@@ -67,8 +77,8 @@
         android:layout_below="@+id/genre"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"/>
-
     </LinearLayout>
+
     <Button
         android:id="@+id/addFilmButton"
         android:layout_width="wrap_content"

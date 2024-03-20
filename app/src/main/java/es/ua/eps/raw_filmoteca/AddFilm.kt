@@ -50,15 +50,19 @@ class AddFilm : AppCompatActivity() {
                 val selectedFormat = formats[formatSpinner.selectedItemPosition]
                 val imdbUrlStr = imdbUrl.text.toString()
                 val commentsStr = comments.text.toString()
+                val latitude = lat.text.toString().toDouble()
+                val longitude = lon.text.toString().toDouble()
 
                 if(!titleStr.isEmpty() && !directorStr.isEmpty()) {
-                    addFilm(titleStr, directorStr, yearInt, selectedGenre, selectedFormat, imdbUrlStr, commentsStr)
+                    addFilm(titleStr, directorStr, yearInt, selectedGenre, selectedFormat, imdbUrlStr, commentsStr, latitude, longitude)
 
                     title.text.clear()
                     director.text.clear()
                     year.text.clear()
                     imdbUrl.text.clear()
                     comments.text.clear()
+                    lat.text.clear()
+                    lon.text.clear()
 
                     val intent = Intent(this@AddFilm, FilmListActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -79,7 +83,7 @@ class AddFilm : AppCompatActivity() {
     }
 
     private fun addFilm(title: String, director: String, year: Int, genre: Film.Genre,
-                        format: Film.Format, imdbUrl: String, comments: String) {
+                        format: Film.Format, imdbUrl: String, comments: String, lat: Double, lon: Double) {
 
         val filmExists = FilmDataSource.films.any { it.title.toString() == title }
 
@@ -98,6 +102,8 @@ class AddFilm : AppCompatActivity() {
                     this.format = format
                 }
                 this.comments = comments
+                this.lat = lat
+                this.lon = lon
                 imageUrl?.let { this.imageUrl = it }
             }
 
@@ -114,6 +120,8 @@ class AddFilm : AppCompatActivity() {
             newFilm.imdbUrl = imdbUrl
             newFilm.comments = comments
             newFilm.imageResId = es.ua.eps.raw_filmoteca.R.drawable.filmoteca
+            newFilm.lat = lat
+            newFilm.lon = lon
 
             FilmDataSource.add(newFilm)
 
