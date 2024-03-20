@@ -9,6 +9,8 @@
     <string name="genre">Genre:</string>
     <string name="imdb">IMDb</string>
     <string name="comments">Comments:</string>
+    <string name="film_loc">Film Location</string>
 
     <string name="no_title">No Title</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>

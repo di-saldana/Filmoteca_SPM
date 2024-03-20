@@ -81,6 +81,12 @@ class FilmDataActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
             }
+            bindings.map.setOnClickListener {
+                val intent = Intent(this, MapsActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                intent.putExtra(EXTRA_FILM_ID, index)
+                startActivity(intent)
+            }
         }
     }
 

@@ -82,14 +82,16 @@ class FilmListFragment : ListFragment(), MessageListener {
         val format = message.data["format"]?.toInt()
         val imdb = message.data["imdb"]
         val comments = message.data["comments"]
+        val latitude = message.data["lat"]?.toDouble()
+        val longitude = message.data["lon"]?.toDouble()
 
         val filmExists = FilmDataSource.films.any { it.title.toString() == title }
 
         if (isNewFilm) {
             if (filmExists) {
-                updateFilm(title, photo, director, year, genre, format, imdb,comments)
+                updateFilm(title, photo, director, year, genre, format, imdb,comments, latitude, longitude)
             } else {
-                addFilm(title, photo, director, year, genre, format, imdb, comments)
+                addFilm(title, photo, director, year, genre, format, imdb, comments, latitude, longitude)
             }
         } else {
             if (filmExists) {
@@ -98,7 +100,9 @@ class FilmListFragment : ListFragment(), MessageListener {
         }
     }
 
-    private fun updateFilm(title: String?, imageUrl: Uri?, director: String?, year: String?, genre: Int?, format: Int?, imdb: String?, comments: String?) {
+    private fun updateFilm(title: String?, imageUrl: Uri?, director: String?, year: String?,
+                           genre: Int?, format: Int?, imdb: String?, comments: String?,
+                           lat: Double?, lon: Double?) {
         val existingFilm = FilmDataSource.films.find { it.title.toString() == title }
         existingFilm?.apply {
             this.director = director
@@ -112,6 +116,12 @@ class FilmListFragment : ListFragment(), MessageListener {
             if (format != null) {
                 this.format = Film.Format.fromValue(format)!!
             }
+            if (lat != null) {
+                this.lat = lat
+            }
+            if (lon != null) {
+                this.lon = lon
+            }
             this.comments = comments
             imageUrl?.let { this.imageUrl = it.toString() }
         }
@@ -119,7 +129,9 @@ class FilmListFragment : ListFragment(), MessageListener {
         (listView.adapter as FilmsArrayAdapter).notifyDataSetChanged()
     }
 
-    private fun addFilm(title: String?, imageUrl: Uri?, director: String?, year: String?, genre: Int?, format: Int?, imdb: String?, comments: String?) {
+    private fun addFilm(title: String?, imageUrl: Uri?, director: String?, year: String?,
+                        genre: Int?, format: Int?, imdb: String?, comments: String?,
+                        lat: Double?, lon: Double?) {
         val film = Film().apply {
             this.title = title
             this.director = director
@@ -132,6 +144,12 @@ class FilmListFragment : ListFragment(), MessageListener {
             this.imdbUrl = imdb
             if (format != null) {
                 this.format = Film.Format.fromValue(format)!!
+            }
+            if (lat != null) {
+                this.lat = lat
+            }
+            if (lon != null) {
+                this.lon = lon
             }
             this.comments = comments
             imageUrl?.let {film -> this.imageUrl = film.toString() }

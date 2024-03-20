@@ -9,11 +9,12 @@
     <queries>
         <intent>
             <action android:name="android.intent.action.VIEW" />
+
             <data android:scheme="http" />
         </intent>
-
         <intent>
             <action android:name="android.intent.action.SENDTO" />
+
             <data android:scheme="*" />
         </intent>
     </queries>
@@ -28,6 +29,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RAW_Filmoteca24"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCEQ37_LOuhRuOO7LXGKkFi18oDSvG39qA" />
+        <activity
+            android:name=".MapsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_maps" />
         <activity
             android:name=".AddFilm"
             android:exported="false" />
