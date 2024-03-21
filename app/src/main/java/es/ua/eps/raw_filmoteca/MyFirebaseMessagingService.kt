@@ -46,11 +46,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val notificationId = 102
 
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.filmoteca)
             .setContentTitle(title)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setAutoCancel(false) // true
+            .setAutoCancel(false)
 
         val notificationManager = NotificationManagerCompat.from(this)
 

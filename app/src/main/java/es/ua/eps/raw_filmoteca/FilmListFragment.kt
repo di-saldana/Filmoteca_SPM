@@ -24,7 +24,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-
 @Suppress("DEPRECATION")
 class FilmListFragment : ListFragment(), MessageListener {
     private var callback: OnItemSelectedListener? = null
@@ -84,14 +83,16 @@ class FilmListFragment : ListFragment(), MessageListener {
         val comments = message.data["comments"]
         val latitude = message.data["lat"]?.toDouble()
         val longitude = message.data["lon"]?.toDouble()
+        val geo = message.data["geo"].toBoolean()
+        Log.d("GEO SWITCH VALUE", geo.toString())
 
         val filmExists = FilmDataSource.films.any { it.title.toString() == title }
 
         if (isNewFilm) {
             if (filmExists) {
-                updateFilm(title, photo, director, year, genre, format, imdb,comments, latitude, longitude)
+                updateFilm(title, photo, director, year, genre, format, imdb,comments, latitude, longitude, geo)
             } else {
-                addFilm(title, photo, director, year, genre, format, imdb, comments, latitude, longitude)
+                addFilm(title, photo, director, year, genre, format, imdb, comments, latitude, longitude, geo)
             }
         } else {
             if (filmExists) {
@@ -102,7 +103,7 @@ class FilmListFragment : ListFragment(), MessageListener {
 
     private fun updateFilm(title: String?, imageUrl: Uri?, director: String?, year: String?,
                            genre: Int?, format: Int?, imdb: String?, comments: String?,
-                           lat: Double?, lon: Double?) {
+                           lat: Double?, lon: Double?, geo: Boolean) {
         val existingFilm = FilmDataSource.films.find { it.title.toString() == title }
         existingFilm?.apply {
             this.director = director
@@ -123,6 +124,7 @@ class FilmListFragment : ListFragment(), MessageListener {
                 this.lon = lon
             }
             this.comments = comments
+            this.geocercado = geo
             imageUrl?.let { this.imageUrl = it.toString() }
         }
 
@@ -131,7 +133,7 @@ class FilmListFragment : ListFragment(), MessageListener {
 
     private fun addFilm(title: String?, imageUrl: Uri?, director: String?, year: String?,
                         genre: Int?, format: Int?, imdb: String?, comments: String?,
-                        lat: Double?, lon: Double?) {
+                        lat: Double?, lon: Double?, geo: Boolean) {
         val film = Film().apply {
             this.title = title
             this.director = director
@@ -152,6 +154,7 @@ class FilmListFragment : ListFragment(), MessageListener {
                 this.lon = lon
             }
             this.comments = comments
+            this.geocercado = geo
             imageUrl?.let {film -> this.imageUrl = film.toString() }
         }
         FilmDataSource.films.add(film)
@@ -239,4 +242,5 @@ class FilmListFragment : ListFragment(), MessageListener {
         super.onDestroy()
         MyFirebaseMessagingService.unregisterListener(this)
     }
+
 }

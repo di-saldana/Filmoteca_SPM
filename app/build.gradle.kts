@@ -61,15 +61,15 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("com.google.android.gms:play-services-auth:21.0.0")
-    implementation("com.squareup.picasso:picasso:2.8")
-
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
     implementation("com.google.firebase:firebase-messaging-ktx:23.4.1")
     implementation("com.google.firebase:firebase-analytics-ktx:21.5.1")
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
     implementation("com.google.android.gms:play-services-maps:18.1.0")
+    implementation("com.google.android.gms:play-services-location:21.2.0")
+    implementation("com.google.android.material:material:1.11.0")
+    implementation("com.squareup.picasso:picasso:2.8")
 
     testImplementation("junit:junit:4.13.2")
 

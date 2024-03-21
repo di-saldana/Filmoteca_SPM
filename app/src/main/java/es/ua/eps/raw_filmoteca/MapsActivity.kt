@@ -1,18 +1,30 @@
 package es.ua.eps.raw_filmoteca
 
+import android.Manifest
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.app.ActivityCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import es.ua.eps.raw_filmoteca.data.FilmDataSource
@@ -20,9 +32,19 @@ import es.ua.eps.raw_filmoteca.databinding.ActivityMapsBinding
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
+    object AppSettings {
+        const val GEOFENCE_RADIUS_METERS = 500
+    }
+    companion object {
+        const val CHANNEL_ID : String = "My Channel"
+        const val NOTIFIACTION_ID = 100
+    }
+
+    private lateinit var notification: Notification
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private lateinit var mGoogleSignInClient: GoogleSignInClient
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private var index = -1
     private var lat = -34.0 // Sydney
@@ -48,6 +70,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     }
 
     /**
@@ -70,12 +94,89 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
             val movieLoc = LatLng(lat, lon)
             mMap.addMarker(MarkerOptions().position(movieLoc).title(film.title).snippet(film.director + ", " + film.year))
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(movieLoc))
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(movieLoc, 14f))
+
+            Log.d("GEO SWITCH VALUE", film.geocercado.toString())
+            if (film.geocercado) {
+                val circleOptions = CircleOptions()
+                    .center(movieLoc)
+                    .radius(AppSettings.GEOFENCE_RADIUS_METERS.toDouble())
+                    .strokeWidth(2f)
+                    .strokeColor(Color.BLUE)
+                    .fillColor(Color.argb(70, 0, 0, 255))
+                mMap.addCircle(circleOptions)
+
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    return
+                }
+
+                mMap.isMyLocationEnabled = true
+                fusedLocationClient.lastLocation.addOnSuccessListener(this) { location : Location? ->
+                    if (location != null) {
+                        val currentLatLng = LatLng(location.latitude, location.longitude)
+
+                        if (isInsideGeofence(currentLatLng, movieLoc, AppSettings.GEOFENCE_RADIUS_METERS)) {
+                            Log.d("Geofence", "Pelicula cercana")
+                            makeNotification()
+                        }
+                    }
+                }
+            }
         } else {
             val loc = LatLng(lat, lon)
             mMap.addMarker(MarkerOptions().position(loc).title("Default Location"))
             mMap.moveCamera(CameraUpdateFactory.newLatLng(loc))
         }
+    }
+
+    private fun isInsideGeofence(userLocation: LatLng, filmLocation: LatLng, radius: Int): Boolean {
+        val distance = FloatArray(1)
+        Location.distanceBetween(
+            userLocation.latitude, userLocation.longitude,
+            filmLocation.latitude, filmLocation.longitude,
+            distance
+        )
+        return distance[0] <= radius
+    }
+
+    private fun makeNotification() {
+        var notificationManager : NotificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+        if (index != -1) {
+            val film = FilmDataSource.films[index]
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                notification = Notification.Builder(this)
+                    .setSmallIcon(R.drawable.filmoteca)
+                    .setContentText(film.title)
+                    .setSubText("Film Location Near")
+                    .setChannelId(CHANNEL_ID)
+                    .build()
+
+                notificationManager.createNotificationChannel(
+                    NotificationChannel(
+                        CHANNEL_ID,
+                        "My notification channel",
+                        NotificationManager.IMPORTANCE_HIGH
+                    )
+                )
+            } else {
+                notification = Notification.Builder(this)
+                    .setSmallIcon(R.drawable.filmoteca)
+                    .setContentText(film.title)
+                    .setSubText("Film Location Near")
+                    .build()
+            }
+        }
+
+        notificationManager.notify(NOTIFIACTION_ID, notification)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -114,5 +215,4 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             else -> return super.onOptionsItemSelected(item)
         }
     }
-
 }

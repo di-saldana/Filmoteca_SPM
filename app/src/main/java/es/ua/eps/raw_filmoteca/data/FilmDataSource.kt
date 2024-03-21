@@ -20,8 +20,9 @@ object FilmDataSource {
         f.genre = Film.Genre.Comedy
         f.imdbUrl = "https://www.imdb.com/title/tt0449059/"
         f.year = 2006
-        f.lat = 35.1971681432131
-        f.lon = -111.65086992604324
+        f.lat = 35.1971681432131 // 38.344825559911314
+        f.lon = -111.65086992604324 // -0.4832945846566347
+        f.geocercado = true
         films.add(f)
 
         f = Film()
@@ -35,6 +36,7 @@ object FilmDataSource {
         f.year = 2023
         f.lat = 30.045327497689453
         f.lon = -89.93199851892925
+        f.geocercado = true
         films.add(f)
 
         f = Film()
@@ -48,6 +50,7 @@ object FilmDataSource {
         f.year = 1986
         f.lat = 41.87975219259205
         f.lon = -87.62365964919222
+        f.geocercado = true
         films.add(f)
 
         f = Film()
@@ -61,6 +64,7 @@ object FilmDataSource {
         f.year       = 1985
         f.lat        = 33.98050176719493
         f.lon        = -118.04421385176465
+        f.geocercado = true
         films.add(f)
 
         f = Film()
@@ -74,6 +78,7 @@ object FilmDataSource {
         f.year = 1984
         f.lat = 34.05482897813782
         f.lon = -118.24733129839981
+        f.geocercado = true
         films.add(f)
 
         f = Film()
@@ -87,6 +92,7 @@ object FilmDataSource {
         f.year = 1987
         f.lat = 52.972052255160385
         f.lon = -9.431011033859534
+        f.geocercado = true
         films.add(f)
 
         f = Film()
@@ -100,6 +106,7 @@ object FilmDataSource {
         f.year = 2022
         f.lat = 18.468063797421593
         f.lon = -66.11095700028409
+        f.geocercado = true
         films.add(f)
     }
 

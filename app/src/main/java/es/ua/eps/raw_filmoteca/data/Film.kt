@@ -22,6 +22,7 @@ class Film {
     var loading = false
     var lat: Double = 0.0
     var lon: Double = 0.0
+    var geocercado: Boolean = false
 
     //---------------------------------
     fun clone(): Film {
@@ -37,6 +38,9 @@ class Film {
         film.comments = comments
         film.imageUrl = imageUrl
         film.image = image
+        film.lat = lat
+        film.lon = lon
+        film.geocercado = geocercado
         //film.loading = loading
 
         return film

@@ -4,6 +4,7 @@ import android.R
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
@@ -50,11 +51,14 @@ class AddFilm : AppCompatActivity() {
                 val selectedFormat = formats[formatSpinner.selectedItemPosition]
                 val imdbUrlStr = imdbUrl.text.toString()
                 val commentsStr = comments.text.toString()
-                val latitude = lat.text.toString().toDouble()
-                val longitude = lon.text.toString().toDouble()
+                val latitude = lat.text.toString().toDoubleOrNull() ?: 0.0
+                val longitude = lon.text.toString().toDoubleOrNull() ?: 0.0
+                val geocercado = switchGeo.isChecked
+                Log.d("GEO SWITCH", geocercado.toString())
 
                 if(!titleStr.isEmpty() && !directorStr.isEmpty()) {
-                    addFilm(titleStr, directorStr, yearInt, selectedGenre, selectedFormat, imdbUrlStr, commentsStr, latitude, longitude)
+                    addFilm(titleStr, directorStr, yearInt, selectedGenre, selectedFormat,
+                        imdbUrlStr, commentsStr, latitude, longitude, geocercado)
 
                     title.text.clear()
                     director.text.clear()
@@ -83,7 +87,8 @@ class AddFilm : AppCompatActivity() {
     }
 
     private fun addFilm(title: String, director: String, year: Int, genre: Film.Genre,
-                        format: Film.Format, imdbUrl: String, comments: String, lat: Double, lon: Double) {
+                        format: Film.Format, imdbUrl: String, comments: String,
+                        lat: Double, lon: Double, geo: Boolean) {
 
         val filmExists = FilmDataSource.films.any { it.title.toString() == title }
 
@@ -104,6 +109,7 @@ class AddFilm : AppCompatActivity() {
                 this.comments = comments
                 this.lat = lat
                 this.lon = lon
+                this.geocercado = geo
                 imageUrl?.let { this.imageUrl = it }
             }
 
@@ -122,6 +128,7 @@ class AddFilm : AppCompatActivity() {
             newFilm.imageResId = es.ua.eps.raw_filmoteca.R.drawable.filmoteca
             newFilm.lat = lat
             newFilm.lon = lon
+            newFilm.geocercado = geo
 
             FilmDataSource.add(newFilm)
 
