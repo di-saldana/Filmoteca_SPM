@@ -56,7 +56,7 @@ class AddFilm : AppCompatActivity() {
                 val geocercado = switchGeo.isChecked
                 Log.d("GEO SWITCH", geocercado.toString())
 
-                if(!titleStr.isEmpty() && !directorStr.isEmpty()) {
+                if(titleStr.isNotEmpty() && directorStr.isNotEmpty()) {
                     addFilm(titleStr, directorStr, yearInt, selectedGenre, selectedFormat,
                         imdbUrlStr, commentsStr, latitude, longitude, geocercado)
 
@@ -83,7 +83,7 @@ class AddFilm : AppCompatActivity() {
             .build()
 
         // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
     }
 
     private fun addFilm(title: String, director: String, year: Int, genre: Film.Genre,
@@ -96,16 +96,10 @@ class AddFilm : AppCompatActivity() {
             val existingFilm = FilmDataSource.films.find { it.title.toString() == title }
             existingFilm?.apply {
                 this.director = director
-                if (year != null) {
-                    this.year = year
-                }
-                if (genre != null) {
-                    this.genre = genre
-                }
+                this.year = year
+                this.genre = genre
                 this.imdbUrl = imdbUrl
-                if (format != null) {
-                    this.format = format
-                }
+                this.format = format
                 this.comments = comments
                 this.lat = lat
                 this.lon = lon

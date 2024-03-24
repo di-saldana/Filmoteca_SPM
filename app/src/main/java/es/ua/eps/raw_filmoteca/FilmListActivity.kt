@@ -1,6 +1,8 @@
 package es.ua.eps.raw_filmoteca
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +10,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ListView
+import androidx.core.app.ActivityCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -16,6 +19,7 @@ import es.ua.eps.raw_filmoteca.databinding.ActivityFilmListBinding
 class FilmListActivity : AppCompatActivity(), FilmListFragment.OnItemSelectedListener{
     private lateinit var bindings: ActivityFilmListBinding
     private lateinit var mGoogleSignInClient: GoogleSignInClient
+    private val NOTIFICATION_PERMISSION_REQUEST_CODE = 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +43,47 @@ class FilmListActivity : AppCompatActivity(), FilmListFragment.OnItemSelectedLis
             .build()
 
         // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+
+        if (!hasNotificationPermission()) {
+            requestNotificationPermission()
+        }
+    }
+
+    private fun hasNotificationPermission(): Boolean {
+        return ActivityCompat.checkSelfPermission(
+            this, Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestNotificationPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+            NOTIFICATION_PERMISSION_REQUEST_CODE
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                enableNotificationServices()
+            }
+        }
+    }
+
+    private fun enableNotificationServices() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED) {
+            return
+        }
     }
 
     override fun onItemSelected(position: Int, listView: ListView) {

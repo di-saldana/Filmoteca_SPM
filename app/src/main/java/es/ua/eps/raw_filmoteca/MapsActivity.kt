@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -38,7 +39,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
     companion object {
         const val CHANNEL_ID : String = "My Channel"
-        const val NOTIFIACTION_ID = 100
+        const val NOTIFICATION_ID = 100
+        const val LOCATION_PERMISSION_REQUEST_CODE = 1001
     }
 
     private lateinit var notification: Notification
@@ -70,10 +72,51 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .build()
 
         // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         updateGeofenceRadius()
+    }
+
+    private fun hasLocationPermission(): Boolean {
+        return ActivityCompat.checkSelfPermission(
+            this, Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestLocationPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            LOCATION_PERMISSION_REQUEST_CODE
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                enableLocationServices()
+            }
+        }
+    }
+
+    private fun enableLocationServices() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        mMap.isMyLocationEnabled = true
     }
 
     /**
@@ -88,6 +131,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+        if (!hasLocationPermission()) {
+            requestLocationPermission()
+        }
+
         if (index != -1) {
             val film = FilmDataSource.films[index]
 
@@ -95,8 +142,31 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             lon = film.lon
 
             val movieLoc = LatLng(lat, lon)
-            mMap.addMarker(MarkerOptions().position(movieLoc).title(film.title).snippet(film.director + ", " + film.year))
+            mMap.addMarker(MarkerOptions().position(movieLoc).title(film.title).snippet("${film.director}, ${film.year}"))
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(movieLoc, 14f))
+
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return
+            }
+
+            mMap.isMyLocationEnabled = true
+            fusedLocationClient.lastLocation.addOnSuccessListener(this) { location : Location? ->
+                if (location != null) {
+                    val currentLatLng = LatLng(location.latitude, location.longitude)
+
+                    if (isInsideGeofence(currentLatLng, movieLoc, AppSettings.GEOFENCE_RADIUS_METERS)) {
+                        Log.d("Geofence", "Pelicula cercana")
+                        makeNotification()
+                    }
+                }
+            }
 
             Log.d("GEO SWITCH VALUE", film.geocercado.toString())
             if (film.geocercado) {
@@ -107,29 +177,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     .strokeColor(Color.BLUE)
                     .fillColor(Color.argb(70, 0, 0, 255))
                 mMap.addCircle(circleOptions)
-
-                if (ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    return
-                }
-
-                mMap.isMyLocationEnabled = true
-                fusedLocationClient.lastLocation.addOnSuccessListener(this) { location : Location? ->
-                    if (location != null) {
-                        val currentLatLng = LatLng(location.latitude, location.longitude)
-
-                        if (isInsideGeofence(currentLatLng, movieLoc, AppSettings.GEOFENCE_RADIUS_METERS)) {
-                            Log.d("Geofence", "Pelicula cercana")
-                            makeNotification()
-                        }
-                    }
-                }
             }
         } else {
             val loc = LatLng(lat, lon)
@@ -149,13 +196,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun makeNotification() {
-        var notificationManager : NotificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager : NotificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
         if (index != -1) {
             val film = FilmDataSource.films[index]
 
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                notification = Notification.Builder(this)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                notification = Notification.Builder(this, CHANNEL_ID)
                     .setSmallIcon(R.drawable.filmoteca)
                     .setContentText(film.title)
                     .setSubText("Film Location Near")
@@ -170,7 +217,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     )
                 )
             } else {
-                notification = Notification.Builder(this)
+                notification = Notification.Builder(this, CHANNEL_ID)
                     .setSmallIcon(R.drawable.filmoteca)
                     .setContentText(film.title)
                     .setSubText("Film Location Near")
@@ -178,7 +225,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
-        notificationManager.notify(NOTIFIACTION_ID, notification)
+        notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
     private fun updateGeofenceRadius() {

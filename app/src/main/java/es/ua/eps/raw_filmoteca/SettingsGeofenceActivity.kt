@@ -21,20 +21,17 @@ class SettingsGeofenceActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bindings = ActivitySettingsGeofenceBinding.inflate(layoutInflater)
+        setContentView(bindings.root)
 
-        with(bindings) {
-            setContentView(root)
+        // Set the initial value for textViewRadiusValue
+        prefs = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+        val currentValue = prefs.getInt("radius", 500)
+        bindings.currentValue.setText(currentValue.toString())
 
-            // Set the initial value for textViewRadiusValue
-            prefs = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
-            val currentValue = prefs.getInt("radius", 500)
-            bindings.currentValue.setText(currentValue.toString())
-
-            buttonSave.setOnClickListener {
-                val newValue = bindings.currentValue.text.toString().toIntOrNull() ?: currentValue
-                saveSharedPreferences(newValue)
-                finish()
-            }
+        bindings.buttonSave.setOnClickListener {
+            val newValue = bindings.currentValue.text.toString().toIntOrNull() ?: currentValue
+            saveSharedPreferences(newValue)
+            finish()
         }
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -42,7 +39,7 @@ class SettingsGeofenceActivity : AppCompatActivity() {
             .build()
 
         // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
     }
 
     private fun saveSharedPreferences(radius: Int) {

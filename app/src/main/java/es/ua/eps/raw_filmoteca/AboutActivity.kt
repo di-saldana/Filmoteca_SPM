@@ -28,7 +28,7 @@ class AboutActivity : AppCompatActivity() {
             .build()
 
         // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(this, mGoogleSignInOptions);
+        mGoogleSignInClient = GoogleSignIn.getClient(this, mGoogleSignInOptions)
 
         val account : GoogleSignInAccount?= GoogleSignIn
             .getLastSignedInAccount(this)
