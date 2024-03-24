@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -33,7 +34,7 @@ import es.ua.eps.raw_filmoteca.databinding.ActivityMapsBinding
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     object AppSettings {
-        const val GEOFENCE_RADIUS_METERS = 500
+        var GEOFENCE_RADIUS_METERS = 500
     }
     companion object {
         const val CHANNEL_ID : String = "My Channel"
@@ -72,6 +73,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        updateGeofenceRadius()
     }
 
     /**
@@ -179,6 +181,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         notificationManager.notify(NOTIFIACTION_ID, notification)
     }
 
+    private fun updateGeofenceRadius() {
+        val prefs = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+        val savedRadius = prefs.getInt("radius", AppSettings.GEOFENCE_RADIUS_METERS)
+        AppSettings.GEOFENCE_RADIUS_METERS = savedRadius
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
         return true
@@ -207,6 +215,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             R.id.about -> {
                 val intent = Intent(this, AboutActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+                return true
+            }
+            R.id.geo -> {
+                val intent = Intent(this, SettingsGeofenceActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 startActivity(intent)
                 return true

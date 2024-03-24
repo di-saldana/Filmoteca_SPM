@@ -83,6 +83,12 @@ class FilmListActivity : AppCompatActivity(), FilmListFragment.OnItemSelectedLis
                 startActivity(intent)
                 return true
             }
+            R.id.geo -> {
+                val intent = Intent(this, SettingsGeofenceActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+                return true
+            }
 
             else -> return super.onOptionsItemSelected(item)
         }

@@ -169,6 +169,12 @@ class AddFilm : AppCompatActivity() {
                 startActivity(intent)
                 return true
             }
+            es.ua.eps.raw_filmoteca.R.id.geo -> {
+                val intent = Intent(this, SettingsGeofenceActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+                return true
+            }
 
             else -> return super.onOptionsItemSelected(item)
         }

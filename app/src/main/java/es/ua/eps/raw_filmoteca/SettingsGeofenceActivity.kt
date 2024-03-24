@@ -1,68 +1,54 @@
 package es.ua.eps.raw_filmoteca
 
+import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.squareup.picasso.Picasso
-import es.ua.eps.raw_filmoteca.databinding.ActivityAboutBinding
+import es.ua.eps.raw_filmoteca.databinding.ActivitySettingsGeofenceBinding
 
 
-class AboutActivity : AppCompatActivity() {
-    private lateinit var bindings: ActivityAboutBinding
-    lateinit var mGoogleSignInClient: GoogleSignInClient
-    lateinit var mGoogleSignInOptions : GoogleSignInOptions
+class SettingsGeofenceActivity : AppCompatActivity() {
+    private lateinit var bindings: ActivitySettingsGeofenceBinding
+    private lateinit var mGoogleSignInClient: GoogleSignInClient
+    private lateinit var prefs: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bindings = ActivityAboutBinding.inflate(layoutInflater)
-
-        mGoogleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestEmail()
-            .build()
-
-        // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(this, mGoogleSignInOptions);
-
-        val account : GoogleSignInAccount?= GoogleSignIn
-            .getLastSignedInAccount(this)
+        bindings = ActivitySettingsGeofenceBinding.inflate(layoutInflater)
 
         with(bindings) {
             setContentView(root)
 
-            if (account != null) {
-                Picasso.get().load(account.photoUrl).into(profileImage)
-                id.text = "ID: " + account.id
-                name.text = "Name: " + account.displayName
-                email.text = "Email: " + account.email
-            }
+            // Set the initial value for textViewRadiusValue
+            prefs = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+            val currentValue = prefs.getInt("radius", 500)
+            bindings.currentValue.setText(currentValue.toString())
 
-            websiteButton.setOnClickListener {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.imdb.com/"))
-
-                if (intent.resolveActivity(packageManager) != null) {
-                    startActivity(intent)
-                }
-            }
-
-            supportButton.setOnClickListener {
-                val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:dsl42@alu.ua.es"))
-
-                if (intent.resolveActivity(packageManager) != null) {
-                    startActivity(intent)
-                }
-            }
-
-            backButton.setOnClickListener {
+            buttonSave.setOnClickListener {
+                val newValue = bindings.currentValue.text.toString().toIntOrNull() ?: currentValue
+                saveSharedPreferences(newValue)
                 finish()
             }
         }
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .build()
+
+        // Build a GoogleSignInClient with the options specified by gso.
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+    }
+
+    private fun saveSharedPreferences(radius: Int) {
+        val editor = prefs.edit()
+        editor.putInt("radius", radius)
+        editor.apply()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -37,6 +37,10 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCEQ37_LOuhRuOO7LXGKkFi18oDSvG39qA" />
+
+        <activity
+            android:name=".SettingsGeofenceActivity"
+            android:exported="false" />
         <activity
             android:name=".MapsActivity"
             android:exported="false"

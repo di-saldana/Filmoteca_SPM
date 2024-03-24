@@ -1,0 +1,59 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textViewRadiusLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Geofence Settings"
+        android:textSize="20sp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="30dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"/>
+
+    <LinearLayout
+        android:id="@+id/box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textViewRadiusLabel"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp">
+
+        <TextView
+            android:id="@+id/currentRadius"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current radius:"
+            android:layout_centerHorizontal="true"/>
+
+        <EditText
+            android:id="@+id/currentValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:inputType="number"
+            android:text="500"/>
+
+        <TextView
+            android:id="@+id/meters"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="meters"
+            android:layout_centerHorizontal="true"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/buttonSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:layout_below="@id/box"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="70dp"/>
+
+</RelativeLayout>
