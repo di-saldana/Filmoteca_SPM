@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AbsListView
 import android.widget.ListView
+import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.fragment.app.ListFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -83,7 +84,7 @@ class FilmListFragment : ListFragment(), MessageListener {
         val comments = message.data["comments"]
         val latitude = message.data["lat"]?.toDouble()
         val longitude = message.data["lon"]?.toDouble()
-        val geo = message.data["geo"].toBoolean()
+        val geo = message.data["geo"]?.toBoolean() ?: false
         Log.d("GEO SWITCH VALUE", geo.toString())
 
         val filmExists = FilmDataSource.films.any { it.title.toString() == title }
@@ -194,7 +195,7 @@ class FilmListFragment : ListFragment(), MessageListener {
 
                 override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
                     val inflater = mode.menuInflater
-                    inflater.inflate(R.menu.delete_menu, menu)
+                    inflater.inflate(R.menu.edit_menu, menu)
                     selectedItems.clear()
                     return true
                 }
@@ -208,6 +209,11 @@ class FilmListFragment : ListFragment(), MessageListener {
                     return when (item.itemId) {
                         R.id.delete -> {
                             removeSelectedItems()
+                            mode.finish()
+                            true
+                        }
+                        R.id.geo -> {
+                            toggleGeofenceForSelectedItems()
                             mode.finish()
                             true
                         }
@@ -241,6 +247,26 @@ class FilmListFragment : ListFragment(), MessageListener {
     override fun onDestroy() {
         super.onDestroy()
         MyFirebaseMessagingService.unregisterListener(this)
+    }
+
+    private fun toggleGeofenceForSelectedItems() {
+        val context = requireContext()
+
+        for (i in 0 until listView.count) {
+            if (listView.isItemChecked(i)) {
+                val film = listView.getItemAtPosition(i) as Film
+                film.geocercado = !film.geocercado
+
+                if(film.geocercado) {
+                    val toast = Toast.makeText(context, "Geofence added to film", Toast.LENGTH_SHORT)
+                    toast.show()
+                } else {
+                    val toast = Toast.makeText(context, "Geofence removed from film", Toast.LENGTH_SHORT)
+                    toast.show()
+                }
+            }
+        }
+        (listView.adapter as FilmsArrayAdapter).notifyDataSetChanged()
     }
 
 }

@@ -20,8 +20,8 @@ object FilmDataSource {
         f.genre = Film.Genre.Comedy
         f.imdbUrl = "https://www.imdb.com/title/tt0449059/"
         f.year = 2006
-        f.lat = 35.1971681432131 // 38.344825559911314
-        f.lon = -111.65086992604324 // -0.4832945846566347
+        f.lat = 35.1971681432131 // 38.392562408215625
+        f.lon = -111.65086992604324 // -0.519786467220243
         f.geocercado = true
         films.add(f)
 
