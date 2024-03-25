@@ -3,7 +3,6 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
-
 }
 
 android {
@@ -70,6 +69,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.2.0")
     implementation("com.google.android.material:material:1.11.0")
     implementation("com.squareup.picasso:picasso:2.8")
+    implementation("com.google.android.gms:play-services-ads:23.0.0")
 
     testImplementation("junit:junit:4.13.2")
 

@@ -38,6 +38,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCEQ37_LOuhRuOO7LXGKkFi18oDSvG39qA" />
 
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
+
         <activity
             android:name=".SettingsGeofenceActivity"
             android:exported="false" />

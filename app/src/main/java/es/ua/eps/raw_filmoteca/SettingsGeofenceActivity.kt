@@ -69,9 +69,12 @@ class SettingsGeofenceActivity : AppCompatActivity() {
                 return true
             }
             R.id.disconnect -> {
-                mGoogleSignInClient.revokeAccess()
-                finish()
-                finishAffinity()
+                mGoogleSignInClient.revokeAccess().addOnCompleteListener {
+                    val intent = Intent(this, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent)
+                    finish()
+                }
                 return true
             }
             R.id.about -> {
@@ -81,9 +84,6 @@ class SettingsGeofenceActivity : AppCompatActivity() {
                 return true
             }
             R.id.geo -> {
-                val intent = Intent(this, SettingsGeofenceActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
                 return true
             }
 
